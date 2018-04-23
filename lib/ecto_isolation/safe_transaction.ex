@@ -10,10 +10,10 @@ defmodule EctoIsolation.SafeTransaction do
   @commit "commit;"
 
   def transaction(f) do
-    Ecto.Adapters.SQL.query!(Repo, @begin)
-    Ecto.Adapters.SQL.query!(Repo, @isolation_level)
-    f.()
-    Ecto.Adapters.SQL.query!(Repo, @commit)
+    Repo.transaction fn ->
+      Repo.query!(@isolation_level)
+      f.()
+    end
   end
 
   def run(parent, name) do

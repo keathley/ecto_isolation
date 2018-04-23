@@ -9,13 +9,14 @@ defmodule EctoIsolation.UnsafeTransaction do
     Repo.transaction(f)
   end
 
-  def run(name) do
+  def run(parent, name) do
     receive do
       :select ->
         :ok
     end
     IO.puts "#{name}: Selecting."
     Repo.one(from c in Coupon, select: c.code, where: c.code == "foo")
+    send(parent, {self(), :done})
 
     receive do
       :update ->
@@ -26,11 +27,13 @@ defmodule EctoIsolation.UnsafeTransaction do
       update: [set: [used: true]],
       where: c.code == "foo"
     Repo.update_all(query, [])
+    send(parent, {self(), :done})
 
     receive do
       :commit ->
         :ok
     end
     IO.puts "#{name} Committing."
+    send(parent, {self(), :done})
   end
 end

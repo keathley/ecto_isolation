@@ -7,10 +7,10 @@ defmodule EctoIsolation.Coordinator do
     :ok = sync(t2, :select)
 
     :ok = sync(t1, :update)
-    :ok = sync(t2, :update)
+    send(t2, :update)
 
     :ok = sync(t1, :commit)
-    :ok = sync(t2, :commit)
+    send(t2, :commit)
   end
 
   def sync(pid, msg) do
@@ -23,7 +23,7 @@ defmodule EctoIsolation.Coordinator do
 
   def start_transaction(mod, name) do
     pid = self()
-    spawn_link fn ->
+    spawn fn ->
       mod.transaction(fn -> mod.run(pid, name) end)
     end
   end

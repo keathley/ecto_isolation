@@ -4,7 +4,5 @@ defmodule EctoIsolation.Coupon do
   schema "coupons" do
     field :code, :string
     field :used, :boolean
-
-    timestamps()
   end
 end

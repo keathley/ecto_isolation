@@ -5,9 +5,7 @@ defmodule EctoIsolation.SafeTransaction do
   }
   import Ecto.Query, only: [from: 2]
 
-  @begin "begin;"
   @isolation_level "set transaction isolation level repeatable read;"
-  @commit "commit;"
 
   def transaction(f) do
     Repo.transaction fn ->
@@ -23,7 +21,6 @@ defmodule EctoIsolation.SafeTransaction do
     end
     IO.puts "#{name}: Selecting."
     code = Repo.one(from c in Coupon, select: c.code, where: c.code == "foo")
-    IO.inspect(code, label: "code")
     send(parent, {self(), :done})
 
     receive do
@@ -34,8 +31,7 @@ defmodule EctoIsolation.SafeTransaction do
     query = from c in Coupon,
       update: [set: [used: true]],
       where: c.code == "foo"
-    resp = Repo.update_all(query, [])
-    IO.inspect(resp, label: "REsponse")
+    _resp = Repo.update_all(query, [])
     send(parent, {self(), :done})
 
     receive do

@@ -39,7 +39,7 @@ In order to run the tests first you need to setup the database:
 Running the tests is done like so:
 
 ```elixir
-# This transaction will not fail and you'll loose updates
+# This transaction will not fail and you'll lose updates
 iex> EctoIsolation.Coordinator.race(EctoIsolation.UnsafeTransaction)
 
 # This transaction uses the correct isolation level and you'll see failures
